@@ -26,6 +26,7 @@ namespace SuuSee.WeChat
         public void SaveWXUser(iMidudu.Model.WXUser user)
         {
             //insert or update
+            new iMidudu.Biz.WXUserBiz().SaveWXUser(user);
 
         }
     }

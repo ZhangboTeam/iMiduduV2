@@ -10,7 +10,7 @@ namespace iMidudu.Model
         public string OpenId { get; set; }
         public string NickName { get; set; }
         public string Pic { get; set; }
-        public string Sex { get; set; }
+        public bool Sex { get; set; }
         public string WXCity { get; set; }
         public string WXProvince { get; set; }
         public string WXCountry { get; set; }

@@ -7,6 +7,30 @@ namespace iMidudu.Biz
 {
     public class WXUserBiz
     {
-       public 
+        public void SaveWXUser(iMidudu.Model.WXUser user)
+        {
+            //insert or update
+            //存在吗?
+            var dal = new iMidudu.Data.WXUserDAL();
+            var exists = dal.ExistsByOpenid(user.OpenId);
+            if (exists)
+            {
+                //update
+                var olduser = dal.SelectById(user.OpenId);
+                olduser.NickName = user.NickName;
+                ///////
+                //////
+                olduser.LastActiveTime = DateTime.Now;
+                dal.UpdateWXUser(olduser);
+            }
+            else
+            {
+                //insert
+                user.RegisterDate = DateTime.Now;
+                user.LastActiveTime = DateTime.Now;
+                dal.InsertWXUser(user);
+            }
+
+        }
     }
 }
