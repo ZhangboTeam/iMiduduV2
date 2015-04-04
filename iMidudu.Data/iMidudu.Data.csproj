@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="ActivityDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScanHistoryDAL.cs" />
     <Compile Include="WXUserDAL.cs" />
   </ItemGroup>
   <ItemGroup>

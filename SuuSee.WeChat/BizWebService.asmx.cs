@@ -29,5 +29,19 @@ namespace SuuSee.WeChat
             new iMidudu.Biz.WXUserBiz().SaveWXUser(user);
 
         }
+        [WebMethod]
+        public void InsertScanHistory(iMidudu.Model.ScanHistory History)
+        {
+            //insert or update
+            new iMidudu.Biz.ScanHistoryBiz().InsertScanHistory(History);
+
+        }
+        [WebMethod]
+        public void UpdateScanHistory(Guid ScanHistoryId, Guid PrizeId)
+        {
+            //insert or update
+            new iMidudu.Biz.ScanHistoryBiz().UpdateScanHistory(ScanHistoryId,PrizeId);
+
+        }
     }
 }
