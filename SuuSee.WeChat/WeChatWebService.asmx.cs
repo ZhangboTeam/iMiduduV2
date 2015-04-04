@@ -40,16 +40,22 @@ namespace SuuSee.WeChat
             }
         }
          
+
+        [WebMethod(EnableSession =true)]
+        public string AccessToken()
+        {
+            return this.Token;
+        }
         public   string Token
         {
             get
             {
-                var cachedToken = System.Web.HttpContext.Current.Cache.Get("token");
-                //cachedToken = null;
-                if (cachedToken == null)
+                var cachedToken = System.Web.HttpContext.Current.Cache["token"];
+                 
+                if (cachedToken == null )
                 {
                     CacheItemRemovedCallback("token", null, CacheItemRemovedReason.Expired);
-                    cachedToken = System.Web.HttpContext.Current.Cache.Get("token");
+                    cachedToken = System.Web.HttpContext.Current.Cache["token"];
 
                 }
                 return cachedToken.ToString();
@@ -60,7 +66,7 @@ namespace SuuSee.WeChat
             if (key == "token")
             {
                 var tokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx8cabe7121f5369a3&secret=6066d7e2e03fbb351a9a4602f07a3a94";
-
+                //              https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx8cabe7121f5369a3&secret=6066d7e2e03fbb351a9a4602f07a3a94
                 var response = System.Net.WebRequest.Create(tokenUrl).GetResponse();
                 Stream dataStream = response.GetResponseStream();
                 // Open the stream using a StreamReader for easy access.
@@ -68,7 +74,7 @@ namespace SuuSee.WeChat
                 // Read the content.
                 string responseFromServer = reader.ReadToEnd();
                 var newToken = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenResponse>(responseFromServer);
-                System.Web.HttpContext.Current.Cache.Add("token", newToken.access_token, null, DateTime.Now.AddSeconds(newToken.expires_in - 5), TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, CacheItemRemovedCallback);
+                System.Web.HttpContext.Current.Cache.Insert("token", newToken.access_token, null, DateTime.Now.AddSeconds(newToken.expires_in), TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, CacheItemRemovedCallback);
             }
         }
 
@@ -104,7 +110,7 @@ namespace SuuSee.WeChat
                 {
                     throw new Exception(newTicket.errmsg);
                 }
-                System.Web.HttpContext.Current.Cache.Add("ticket", newTicket.ticket, null, DateTime.Now.AddSeconds(newTicket.expires_in - 5), TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, TicketItemRemovedCallback);
+                System.Web.HttpContext.Current.Cache.Add("ticket", newTicket.ticket, null, DateTime.Now.AddSeconds(newTicket.expires_in ), TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, TicketItemRemovedCallback);
             }
         }
 
