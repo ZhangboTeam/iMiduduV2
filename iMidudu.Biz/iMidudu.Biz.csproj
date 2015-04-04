@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="ActivityBiz.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WXUserBiz.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\iMidudu.Data\iMidudu.Data.csproj">
