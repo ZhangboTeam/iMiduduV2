@@ -22,5 +22,11 @@ namespace SuuSee.WeChat
         {
             return new iMidudu.Biz.ActivityBiz().GetUrlOfCode(Code);
         }
+        [WebMethod]
+        public void SaveWXUser(iMidudu.Model.WXUser user)
+        {
+            //insert or update
+
+        }
     }
 }
