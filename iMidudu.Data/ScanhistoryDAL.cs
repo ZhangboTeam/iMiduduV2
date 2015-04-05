@@ -10,10 +10,10 @@ namespace iMidudu.Data
         public void InsertScanHistory(iMidudu.Model.ScanHistory history)
         {
             //insert
-            SuuSee.Data.SqlHelper.ExecteNonQueryStoredProcedure("ScanHistory_InsertProcedure",
-                new System.Data.SqlClient.SqlParameter("@ScanHistoryId", history.ScanHistoryId),
+            
+            var ps = new System.Data.SqlClient.SqlParameter[] {  new System.Data.SqlClient.SqlParameter("@ScanHistoryId", history.ScanHistoryId),
                 new System.Data.SqlClient.SqlParameter("@OpenId", history.OpenId),
-                new System.Data.SqlClient.SqlParameter("@PrizeId", history.PrizeId),
+                new System.Data.SqlClient.SqlParameter("@PrizeId", history.PrizeId == null ? (object) DBNull.Value : history.PrizeId),
                 new System.Data.SqlClient.SqlParameter("@IP", history.IP),
                 new System.Data.SqlClient.SqlParameter("@Country", history.Country),
                 new System.Data.SqlClient.SqlParameter("@Province", history.Province),
@@ -23,9 +23,18 @@ namespace iMidudu.Data
                 new System.Data.SqlClient.SqlParameter("@LineType", history.LineType),
                 new System.Data.SqlClient.SqlParameter("@Agent", history.Agent),
                 new System.Data.SqlClient.SqlParameter("@Os", history.Os),
-                new System.Data.SqlClient.SqlParameter("@ScanDate", history.ScanDate),
+                new System.Data.SqlClient.SqlParameter("@ScanDate", DateTime.Now),
                 new System.Data.SqlClient.SqlParameter("@TicketUrl", history.TicketUrl),
-                new System.Data.SqlClient.SqlParameter("@TicketNumber", history.TicketNumber));
+                new System.Data.SqlClient.SqlParameter("@TicketNumber", history.TicketNumber)};
+            foreach (var item in ps)
+            {
+                if (item.Value==null||string.IsNullOrEmpty (item.Value.ToString()))
+                {
+                    item.Value = DBNull.Value;
+                }
+            }
+            SuuSee.Data.SqlHelper.ExecteNonQueryStoredProcedure("ScanHistory_InsertProcedure",ps
+               );
 
         }
         public void UpdateScanHistory(Guid ScanHistoryId,Guid PrizeId)
@@ -34,5 +43,7 @@ namespace iMidudu.Data
                 new System.Data.SqlClient.SqlParameter("@PrizeId", PrizeId),
                 new System.Data.SqlClient.SqlParameter("@ScanHistoryId", ScanHistoryId));
         }
+      
     }
+
 }

@@ -42,6 +42,6 @@ namespace SuuSee.WeChat
             //insert or update
             new iMidudu.Biz.ScanHistoryBiz().UpdateScanHistory(ScanHistoryId,PrizeId);
 
-        }
+        } 
     }
 }
