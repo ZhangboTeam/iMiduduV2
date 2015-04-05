@@ -18,8 +18,12 @@ namespace iMidudu.Biz
                 //update
                 var olduser = dal.SelectById(user.OpenId);
                 olduser.NickName = user.NickName;
-                ///////
-                //////
+                olduser.Pic = user.Pic;
+                olduser.Sex = user.Sex;
+                olduser.WXCity = user.WXCity;
+                olduser.WXProvince = user.WXProvince;
+                olduser.WXCountry = user.WXCountry;
+                //olduser.RegisterDate = DateTime.Now ;
                 olduser.LastActiveTime = DateTime.Now;
                 dal.UpdateWXUser(olduser);
             }

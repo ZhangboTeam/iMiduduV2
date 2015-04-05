@@ -58,7 +58,7 @@ namespace iMidudu.Data
         }
         public void UpdateWXUser(iMidudu.Model.WXUser user)
         {
-            //insert
+            //update
             SuuSee.Data.SqlHelper.ExecteNonQueryStoredProcedure("WXUser_UpdateProcedure",
                 new System.Data.SqlClient.SqlParameter("@OpenId", user.OpenId),
                 new System.Data.SqlClient.SqlParameter("@NickName", user.NickName),

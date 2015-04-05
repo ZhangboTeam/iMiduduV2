@@ -42,6 +42,24 @@ namespace SuuSee.WeChat
             //insert or update
             new iMidudu.Biz.ScanHistoryBiz().UpdateScanHistory(ScanHistoryId,PrizeId);
 
-        } 
+        }
+
+        /// <summary>
+        /// 抽奖
+        /// </summary>
+        /// <param name="QRCode">QR二维码</param>
+        /// <returns>抽奖结果</returns>
+        [WebMethod]
+        public iMidudu.Model.Prize PrizeLottery(Guid QRCode)
+        {
+            //TODO:老杨去实现抽奖逻辑
+            //下面hard code了
+            return new iMidudu.Model.Prize()
+            {
+                NeedValid = false,
+                PrizeName = "3等奖",
+                URL = "/LotteryResult/Activity1/Result3.aspx"
+            };
+        }
     }
 }
