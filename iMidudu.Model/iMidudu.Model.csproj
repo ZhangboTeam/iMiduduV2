@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Acception.cs" />
     <Compile Include="Activity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScanHistory.cs" />
