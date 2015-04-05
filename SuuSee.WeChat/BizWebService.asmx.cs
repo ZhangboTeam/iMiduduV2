@@ -50,12 +50,12 @@ namespace SuuSee.WeChat
         /// <param name="QRCode">QR二维码</param>
         /// <returns>抽奖结果</returns>
         [WebMethod]
-        public iMidudu.Model.Prize PrizeLottery(Guid QRCode)
+        public iMidudu.Model.Prize PrizeLottery(Guid QRCode1)
         {
             //TODO:老杨去实现抽奖逻辑
             //下面hard code了
             var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount from Prize where QRCode = @QRCode order by PrizeName", 
-                new System.Data.SqlClient.SqlParameter("@QRCode", QRCode))[0];
+                new System.Data.SqlClient.SqlParameter("@QRCode", QRCode1))[0];
             int[] totelCount = new int[table.Rows.Count];//总数
             int[] usedCount = new int[table.Rows.Count];//已用
             int[] remainCount = new int[table.Rows.Count];//剩余
@@ -71,7 +71,7 @@ namespace SuuSee.WeChat
                 usedCount[i] = (int)table.Rows[i]["UsedCount"];
                 limit[i] = (int)table.Rows[i]["DayLimit"];
                 url[i] =table.Rows[i]["URL"].ToString();
-                PrizeName[i] =table.Rows[i]["PrizeName"].ToString();
+                PrizeName[i] =table.Rows[i]["PrizeName"].ToString();                
                 //todayUsedCount[i] = (int)table.Rows[i]["TodayUsedCount"];
                 remainCount[i] = totelCount[i] - usedCount[i];
                 allPrizeCount = allPrizeCount + remainCount[i];
@@ -85,16 +85,20 @@ namespace SuuSee.WeChat
                     break;           
                 }            
             }
-            var PrizeId = (int)table.Rows[j]["PrizeId"];
+            var PrizeId1 = table.Rows[j]["PrizeId"];
             var todayUsedCount = (int)SuuSee.Data.SqlHelper.ExecuteScalarText("select isnull(count(1),0)  from ScanHistory where PrizeId=@PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(today,ScanDate) = @Today",
                 new System.Data.SqlClient.SqlParameter("@Year", DateTime.Today.Year),
                 new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
                 new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day),
-                new System.Data.SqlClient.SqlParameter("@PrizeId", PrizeId));
+                new System.Data.SqlClient.SqlParameter("@PrizeId", PrizeId1));
             if (todayUsedCount < limit[j] + 1)
             {
                 return new iMidudu.Model.Prize()
                 {
+                    PrizeId=Guid.Parse(PrizeId1.ToString()),
+                    DayLimit=limit[j],
+                    QRCode=QRCode1,
+                    Quantity=totelCount[j].ToString(),
                     NeedValid = false,
                     PrizeName = PrizeName[j],
                     URL = url[j]
@@ -104,6 +108,10 @@ namespace SuuSee.WeChat
             {
                 return new iMidudu.Model.Prize()
                 {
+                    PrizeId=Guid.Parse(PrizeId1.ToString()),
+                    DayLimit = limit[table.Rows.Count - 1],
+                    QRCode=QRCode1,
+                    Quantity = totelCount[table.Rows.Count - 1].ToString(),
                     NeedValid = false,
                     PrizeName = PrizeName[table.Rows.Count - 1],
                     URL = url[table.Rows.Count - 1]
