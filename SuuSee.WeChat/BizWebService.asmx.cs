@@ -54,18 +54,15 @@ namespace SuuSee.WeChat
         {
             //TODO:老杨去实现抽奖逻辑
             //下面hard code了
-            var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(today,ScanDate) = @Today) as TodayUsedCount from Prize where QRCode = @QRCode order by PrizeName", 
-                new System.Data.SqlClient.SqlParameter("@QRCode", QRCode),
-                new System.Data.SqlClient.SqlParameter("@Year",DateTime.Today.Year),
-                new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
-                new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day))[0];
+            var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount from Prize where QRCode = @QRCode order by PrizeName", 
+                new System.Data.SqlClient.SqlParameter("@QRCode", QRCode))[0];
             int[] totelCount = new int[table.Rows.Count];//总数
             int[] usedCount = new int[table.Rows.Count];//已用
             int[] remainCount = new int[table.Rows.Count];//剩余
             int[] limit = new int[table.Rows.Count];//每日限制
             string[] url = new string[table.Rows.Count];//URL
             string[] PrizeName = new string[table.Rows.Count];//奖项名称
-            int[] todayUsedCount = new int[table.Rows.Count];//今天已用数量
+            //int[] todayUsedCount = new int[table.Rows.Count];//今天已用数量
             int allPrizeCount=0;
             var cumulativeNum=0;
             for (int i = 0; i < table.Rows.Count; i++)
@@ -75,41 +72,52 @@ namespace SuuSee.WeChat
                 limit[i] = (int)table.Rows[i]["DayLimit"];
                 url[i] =table.Rows[i]["URL"].ToString();
                 PrizeName[i] =table.Rows[i]["PrizeName"].ToString();
-                todayUsedCount[i] = (int)table.Rows[i]["TodayUsedCount"];
+                //todayUsedCount[i] = (int)table.Rows[i]["TodayUsedCount"];
                 remainCount[i] = totelCount[i] - usedCount[i];
                 allPrizeCount = allPrizeCount + remainCount[i];
             }
             int randomNum = new Random().Next(1, allPrizeCount + 1);
-            for (int j = 0; j < table.Rows.Count-1; j++) {
+            int j = 0;
+            for (j = 0; j < table.Rows.Count-1; j++) {
                 cumulativeNum = cumulativeNum + remainCount[j];
                 if (randomNum < cumulativeNum + 1)
                 {
-                    if (todayUsedCount[j] < limit[j] + 1)
-                    {
-                        return new iMidudu.Model.Prize()
-                        {
-                            NeedValid = false,
-                            PrizeName = PrizeName[j],
-                            URL = url[j]
-                        };
-                    }
-                    else {
-                        return new iMidudu.Model.Prize()
-                        {
-                            NeedValid = false,
-                            PrizeName = PrizeName[table.Rows.Count-1],
-                            URL = url[table.Rows.Count-1]
-                        };                
-                    }
-            
+                    break;           
                 }            
             }
-            return new iMidudu.Model.Prize()
+            var PrizeId = (int)table.Rows[j]["PrizeId"];
+            var todayUsedCount = (int)SuuSee.Data.SqlHelper.ExecuteScalarText("select isnull(count(1),0)  from ScanHistory where PrizeId=@PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(today,ScanDate) = @Today",
+                new System.Data.SqlClient.SqlParameter("@Year", DateTime.Today.Year),
+                new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
+                new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day),
+                new System.Data.SqlClient.SqlParameter("@PrizeId", PrizeId));
+            if (todayUsedCount < limit[j] + 1)
             {
-                NeedValid = false,
-                PrizeName = PrizeName[table.Rows.Count - 1],
-                URL = url[table.Rows.Count - 1]
-             };
+                return new iMidudu.Model.Prize()
+                {
+                    NeedValid = false,
+                    PrizeName = PrizeName[j],
+                    URL = url[j]
+                };
+            }
+            else
+            {
+                return new iMidudu.Model.Prize()
+                {
+                    NeedValid = false,
+                    PrizeName = PrizeName[table.Rows.Count - 1],
+                    URL = url[table.Rows.Count - 1]
+                };
+            }
+        }
+
+        [WebMethod]
+        public iMidudu.Model.WXUser  SelectWXUserByScanHistoryId(Guid ScanHistoryId)
+        {
+            
+            iMidudu.Model.WXUser user = new  iMidudu.Biz.ScanHistoryBiz().SelectWXUserByScanHistoryId(ScanHistoryId);
+            return user;
+
         }
     }
 }

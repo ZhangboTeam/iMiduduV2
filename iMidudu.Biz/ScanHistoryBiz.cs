@@ -19,6 +19,11 @@ namespace iMidudu.Biz
             var dal = new iMidudu.Data.ScanHistoryDAL();
             dal.UpdateScanHistory(ScanHistoryId,PrizeId);
         }
-
+        public iMidudu.Model.WXUser SelectWXUserByScanHistoryId(Guid ScanHistoryId)
+        {
+            //insert or update
+            var dal = new iMidudu.Data.ScanHistoryDAL();
+           return  dal.SelectWXUserByScanHistoryId(ScanHistoryId);
+        }
     }
 }
