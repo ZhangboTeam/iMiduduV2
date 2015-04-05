@@ -54,29 +54,37 @@ namespace SuuSee.WeChat
         {
             //TODO:老杨去实现抽奖逻辑
             //下面hard code了
-            var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount from Prize where QRCode = @QRCode order by PrizeName", new System.Data.SqlClient.SqlParameter("@QRCode", QRCode))[0];
-            int[,] a = new int[table.Rows.Count, 1];
-            int[] b = new int[table.Rows.Count];//剩余
-            int[] d = new int[table.Rows.Count];//每日限制
+            var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(today,ScanDate) = @Today) as TodayUsedCount from Prize where QRCode = @QRCode order by PrizeName", 
+                new System.Data.SqlClient.SqlParameter("@QRCode", QRCode),
+                new System.Data.SqlClient.SqlParameter("@Year",DateTime.Today.Year),
+                new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
+                new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day))[0];
+            int[] totelCount = new int[table.Rows.Count];//总数
+            int[] usedCount = new int[table.Rows.Count];//已用
+            int[] remainCount = new int[table.Rows.Count];//剩余
+            int[] limit = new int[table.Rows.Count];//每日限制
             string[] url = new string[table.Rows.Count];//URL
-            string[] PrizeName = new string[table.Rows.Count];
-            int c=0;
-            var m=0;
+            string[] PrizeName = new string[table.Rows.Count];//奖项名称
+            int[] todayUsedCount = new int[table.Rows.Count];//今天已用数量
+            int allPrizeCount=0;
+            var cumulativeNum=0;
             for (int i = 0; i < table.Rows.Count; i++)
             {
-                a[i, 0] = (int)table.Rows[i]["Quantity"];
-                a[i, 1] = (int)table.Rows[i]["UsedCount"];
-                d[i] = (int)table.Rows[i]["DayLimit"];
+                totelCount[i] = (int)table.Rows[i]["Quantity"];
+                usedCount[i] = (int)table.Rows[i]["UsedCount"];
+                limit[i] = (int)table.Rows[i]["DayLimit"];
                 url[i] =table.Rows[i]["URL"].ToString();
                 PrizeName[i] =table.Rows[i]["PrizeName"].ToString();
-                b[i] = a[i, 0] - a[i, 1];
-                c = c + b[i];
+                todayUsedCount[i] = (int)table.Rows[i]["TodayUsedCount"];
+                remainCount[i] = totelCount[i] - usedCount[i];
+                allPrizeCount = allPrizeCount + remainCount[i];
             }
-            int num = new Random().Next(1,c+1);
-            for (int j = 0; j < table.Rows.Count; j++) { 
-                m=m+b[j];
-                if (num < m+1) {
-                    if (num < d[j] + 1)
+            int randomNum = new Random().Next(1, allPrizeCount + 1);
+            for (int j = 0; j < table.Rows.Count-1; j++) {
+                cumulativeNum = cumulativeNum + remainCount[j];
+                if (randomNum < cumulativeNum + 1)
+                {
+                    if (todayUsedCount[j] < limit[j] + 1)
                     {
                         return new iMidudu.Model.Prize()
                         {
