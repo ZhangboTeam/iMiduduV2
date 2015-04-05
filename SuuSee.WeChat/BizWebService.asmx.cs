@@ -54,176 +54,54 @@ namespace SuuSee.WeChat
         {
             //TODO:老杨去实现抽奖逻辑
             //下面hard code了
-            var dr = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as 已领数量 from Prize where QRCode = @QRCode order by PrizeName", new System.Data.SqlClient.SqlParameter("@QRCode", QRCode));
-            int[,] a=new int[6,1];
-            int[] b=new int[6];//剩余
-            int[] d=new int[6];//每日限制
-            string[] url=new string[6];//URL
-            int c;
-            for (int i = 0; i < 7; i++) {
-                a[i, 0] = dr.;
-                a[i, 1] = 1;
-                d[i] = 1;
-                url[i] = 1;
+            var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount from Prize where QRCode = @QRCode order by PrizeName", new System.Data.SqlClient.SqlParameter("@QRCode", QRCode))[0];
+            int[,] a = new int[table.Rows.Count, 1];
+            int[] b = new int[table.Rows.Count];//剩余
+            int[] d = new int[table.Rows.Count];//每日限制
+            string[] url = new string[table.Rows.Count];//URL
+            string[] PrizeName = new string[table.Rows.Count];
+            int c=0;
+            var m=0;
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                a[i, 0] = (int)table.Rows[i]["Quantity"];
+                a[i, 1] = (int)table.Rows[i]["UsedCount"];
+                d[i] = (int)table.Rows[i]["DayLimit"];
+                url[i] =table.Rows[i]["URL"].ToString();
+                PrizeName[i] =table.Rows[i]["PrizeName"].ToString();
+                b[i] = a[i, 0] - a[i, 1];
+                c = c + b[i];
             }
-            b[0] = a[0, 0] - a[0, 1];
-            b[1] = a[1, 0] - a[1, 1];
-            b[2] = a[2, 0] - a[2, 1];
-            b[3] = a[3, 0] - a[3, 1];
-            b[4] = a[4, 0] - a[4, 1];
-            b[5] = a[5, 0] - a[5, 1];
-            b[6] = a[6, 0] - a[6, 1];
-            c = b[0] + b[1] + b[2] + b[3] + b[4] + b[5] + b[6];
             int num = new Random().Next(1,c+1);
-            //判断是是否是大奖
-            if (num < b[0]+1) {
-                if (num < d[0] + 1)
-                {
-                    return new iMidudu.Model.Prize()
+            for (int j = 0; j < table.Rows.Count; j++) { 
+                m=m+b[j];
+                if (num < m+1) {
+                    if (num < d[j] + 1)
                     {
-                        NeedValid = false,
-                        PrizeName = "大奖",
-                        URL = url[0]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-                else {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "谢谢参与",
-                        URL = url[6]//"/LotteryResult/Activity1/Result1.aspx"
-                    };                
-                }
+                        return new iMidudu.Model.Prize()
+                        {
+                            NeedValid = false,
+                            PrizeName = PrizeName[j],
+                            URL = url[j]
+                        };
+                    }
+                    else {
+                        return new iMidudu.Model.Prize()
+                        {
+                            NeedValid = false,
+                            PrizeName = PrizeName[table.Rows.Count-1],
+                            URL = url[table.Rows.Count-1]
+                        };                
+                    }
             
+                }            
             }
-            //判断是是否是小奖1
-            else if (num < b[0]+b[1] + 1)
+            return new iMidudu.Model.Prize()
             {
-                if (num < d[1] + 1)
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "小奖1",
-                        URL = url[1]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-                else
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "谢谢参与",
-                        URL = url[6]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-
-            }
-            //判断是是否是小奖2
-            else if (num < b[0] + b[1] +b[2]+ 1)
-            {
-                if (num < d[2] + 1)
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "小奖2",
-                        URL = url[2]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-                else
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "谢谢参与",
-                        URL = url[6]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-
-            }
-            //判断是是否是小奖3
-            else if (num < b[0] + b[1] +b[2]+b[3]+ 1)
-            {
-                if (num < d[3] + 1)
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "小奖3",
-                        URL = url[3]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-                else
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "谢谢参与",
-                        URL = url[6]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-
-            }
-            //判断是是否是小奖4
-            else if (num < b[0] + b[1] + b[2] + b[3] + b[4] + 1)
-            {
-                if (num < d[4] + 1)
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "小奖4",
-                        URL = url[4]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-                else
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "谢谢参与",
-                        URL = url[6]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-
-            }
-            //判断是是否是小奖5
-            else if (num < b[0] + b[1] + b[2] + b[3] + b[4] + b[5] + 1)
-            {
-                if (num < d[5] + 1)
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "小奖5",
-                        URL = url[5]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-                else
-                {
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "谢谢参与",
-                        URL = url[6]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-                }
-
-            }
-            //判断是是否是谢谢参与
-            else 
-            {
-   
-                    return new iMidudu.Model.Prize()
-                    {
-                        NeedValid = false,
-                        PrizeName = "谢谢参与",
-                        URL = url[6]//"/LotteryResult/Activity1/Result1.aspx"
-                    };
-
-
-            }
+                NeedValid = false,
+                PrizeName = PrizeName[table.Rows.Count - 1],
+                URL = url[table.Rows.Count - 1]
+             };
         }
     }
 }
