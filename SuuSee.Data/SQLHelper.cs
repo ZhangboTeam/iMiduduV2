@@ -114,7 +114,7 @@ namespace SuuSee.Data
         /// <param name="cmdText">存储过程的名字或者 T-SQL 语句</param>
         /// <param name="commandParameters">以数组形式提供SqlCommand命令中用到的参数列表</param>
         /// <returns>返回一个表集合(DataTableCollection)表示查询得到的数据集</returns>
-        public static DataTableCollection GetTable(CommandType cmdTye, string cmdText, SqlParameter[] commandParameters)
+        public static DataTableCollection GetTable(CommandType cmdTye, string cmdText, params SqlParameter[] commandParameters)
         {
             return GetTable(cmdTye, cmdText, commandParameters);
         }
@@ -137,7 +137,7 @@ namespace SuuSee.Data
         /// <param name="cmdText"> T-SQL 语句</param>
         /// <param name="commandParameters">以数组形式提供SqlCommand命令中用到的参数列表</param>
         /// <returns>返回一个表集合(DataTableCollection)表示查询得到的数据集</returns>
-        public static DataTableCollection GetTableText(string cmdText, SqlParameter[] commandParameters)
+        public static DataTableCollection GetTableText(string cmdText,params SqlParameter[] commandParameters)
         {
             return GetTable(CommandType.Text, cmdText, commandParameters);
         }
