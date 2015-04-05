@@ -78,7 +78,7 @@ namespace SuuSee.WeChat
             }
             int randomNum = new Random().Next(1, allPrizeCount + 1);
             int j = 0;
-            for (j = 0; j < table.Rows.Count-1; j++) {
+            for (j = 0; j < table.Rows.Count; j++) {
                 cumulativeNum = cumulativeNum + remainCount[j];
                 if (randomNum < cumulativeNum + 1)
                 {
@@ -91,31 +91,34 @@ namespace SuuSee.WeChat
                 new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
                 new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day),
                 new System.Data.SqlClient.SqlParameter("@PrizeId", PrizeId1));
+            iMidudu.Model.Prize prize = null;
             if (todayUsedCount < limit[j] + 1)
-            {
-                return new iMidudu.Model.Prize()
-                {
-                    PrizeId=Guid.Parse(PrizeId1.ToString()),
-                    DayLimit=limit[j],
-                    QRCode=QRCode1,
-                    Quantity=totelCount[j].ToString(),
-                    NeedValid = false,
-                    PrizeName = PrizeName[j],
-                    URL = url[j]
-                };
+            {                
+                //return new iMidudu.Model.Prize()
+                //{
+                    prize.PrizeId=Guid.Parse(PrizeId1.ToString());
+                    prize.DayLimit=limit[j];
+                    prize.QRCode=QRCode1;
+                    prize.Quantity=totelCount[j].ToString();
+                    prize.NeedValid = false;
+                    prize.PrizeName = PrizeName[j];
+                    prize.URL = url[j];
+               // };
+                    return prize;
             }
             else
             {
-                return new iMidudu.Model.Prize()
-                {
-                    PrizeId=Guid.Parse(PrizeId1.ToString()),
-                    DayLimit = limit[table.Rows.Count - 1],
-                    QRCode=QRCode1,
-                    Quantity = totelCount[table.Rows.Count - 1].ToString(),
-                    NeedValid = false,
-                    PrizeName = PrizeName[table.Rows.Count - 1],
-                    URL = url[table.Rows.Count - 1]
-                };
+               // return new iMidudu.Model.Prize()
+                //{
+                prize.PrizeId = Guid.Parse(PrizeId1.ToString());
+                prize.DayLimit = limit[table.Rows.Count - 1];
+                prize.QRCode = QRCode1;
+                prize.Quantity = totelCount[table.Rows.Count - 1].ToString();
+                prize.NeedValid = false;
+                prize.PrizeName = PrizeName[table.Rows.Count - 1];
+                prize.URL = url[table.Rows.Count - 1];
+               // };
+                return prize;
             }
         }
 
