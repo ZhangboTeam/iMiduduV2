@@ -10,7 +10,7 @@ namespace iMidudu.Model
         public Guid PrizeId { get; set; }
         public Guid QRCode { get; set; }
         public string PrizeName { get; set; } 
-        public string Quantity { get; set; }
+        public int Quantity { get; set; }
         public bool NeedValid { get; set; }
         public string URL { get; set; }
         public int DayLimit  { get; set; }
