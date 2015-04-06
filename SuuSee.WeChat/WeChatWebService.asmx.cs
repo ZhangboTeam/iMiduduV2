@@ -157,6 +157,7 @@ namespace SuuSee.WeChat
             return result;
             //return getResponse<UserInfo>(url);
         }
+        [WebMethod(EnableSession = true)]
         public  string newBillNo()
         {
             var rnd = new Random();
@@ -223,8 +224,8 @@ namespace SuuSee.WeChat
 
             return GetMd5(keyString).ToUpper();
         } 
-
-        public  string SendBounsToOpenId(string OpenId, int Money, string billNo,   out string paramstr, out string responseXML)
+        [WebMethod(EnableSession=true)]
+        public string SendBounsToOpenId(string OpenId, int Money, string billNo,  out string paramstr, out string responseXML)
         {
          
             var actName = "perfetti";
