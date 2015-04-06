@@ -7,7 +7,7 @@ namespace iMidudu.Biz
 {
     public class PrizeBiz
     {
-        public void UpdatePrize(Guid PrizeId, string Quantity)
+        public void UpdatePrize(Guid PrizeId, int Quantity)
         {
             //insert or update
             var dal = new iMidudu.Data.PrizeDAL();

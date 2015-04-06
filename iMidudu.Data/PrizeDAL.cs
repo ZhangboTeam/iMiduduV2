@@ -7,7 +7,7 @@ namespace iMidudu.Data
 {
     public class PrizeDAL
     {
-        public void UpdatePrize(Guid PrizeId, string Quantity)
+        public void UpdatePrize(Guid PrizeId, int Quantity)
         {
             SuuSee.Data.SqlHelper.ExecteNonQueryText("update Prize set Quantity=@Quantity where PrizeId=@PrizeId",
                 new System.Data.SqlClient.SqlParameter("@PrizeId", PrizeId),
