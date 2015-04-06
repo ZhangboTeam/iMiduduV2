@@ -45,8 +45,8 @@ namespace iMidudu.Data
         }
         public iMidudu.Model.WXUser SelectWXUserByScanHistoryId(Guid ScanHistoryId)
         {
-            var table=SuuSee.Data.SqlHelper.GetTableText("select * from WXUser where OpenId in (select OpenId from ScanHistory where ScanHistoryId=@ScanHistoryId)", new System.Data.SqlClient.SqlParameter("ScanHistoryId", ScanHistoryId))[0];
-            iMidudu.Model.WXUser user=null;
+            var table=SuuSee.Data.SqlHelper.GetTableText("select * from WXUser where OpenId in (select OpenId from ScanHistory where ScanHistoryId=@ScanHistoryId)", new System.Data.SqlClient.SqlParameter("ScanHistoryId", ScanHistoryId))[0]; 
+            iMidudu.Model.WXUser user=new Model.WXUser();
             user.OpenId = table.Rows[0]["OpenId"].ToString();
             user.NickName = table.Rows[0]["NickName"].ToString();
             user.Pic = table.Rows[0]["Pic"].ToString();
