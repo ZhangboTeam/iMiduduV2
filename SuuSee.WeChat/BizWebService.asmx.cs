@@ -43,6 +43,12 @@ namespace SuuSee.WeChat
             new iMidudu.Biz.ScanHistoryBiz().UpdateScanHistory(ScanHistoryId,PrizeId);
 
         }
+        [WebMethod]
+        public void SaveAcception(iMidudu.Model.Acception accept)
+        {
+            //insert or update
+            new iMidudu.Biz.AcceptionBiz().SaveAcception(accept);
+        }
 
         /// <summary>
         /// 抽奖
