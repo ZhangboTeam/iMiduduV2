@@ -105,7 +105,7 @@ namespace SuuSee.WeChat
             var code = new Random().Next(1000, 9999).ToString(); 
             var str = sendSms( apikey, string.Format(format, code), toMobile);
             str += "";
-            return str;
+            return code;
         }
     }
 }
