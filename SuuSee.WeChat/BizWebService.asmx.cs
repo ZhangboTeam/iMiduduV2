@@ -65,7 +65,7 @@ namespace SuuSee.WeChat
         [WebMethod]
         public iMidudu.Model.Prize PrizeLottery(Guid QRCode)
         {
-            var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount from Prize where QRCode = @QRCode order by PrizeName",
+            var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount from Prize where QRCode = @QRCode order by PrizeId",
                 new System.Data.SqlClient.SqlParameter("@QRCode", QRCode))[0];
             iMidudu.Model.Prize prize = new iMidudu.Model.Prize();
             int[] totelCount = new int[table.Rows.Count];//总数
