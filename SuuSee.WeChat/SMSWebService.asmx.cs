@@ -102,7 +102,7 @@ namespace SuuSee.WeChat
         public   string SendValidCode(string apikey,string format,string toMobile)
         {
              
-            var code = new Random().Next(1000, 9999).ToString(); 
+            var code = new Random().Next(10000, 99999).ToString(); 
             var str = sendSms( apikey, string.Format(format, code), toMobile);
             str += "";
             return code;
