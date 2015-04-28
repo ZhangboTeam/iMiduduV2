@@ -84,6 +84,10 @@ namespace SuuSee.WeChat
                 url[i] = table.Rows[i]["URL"].ToString();
                 PrizeName[i] = table.Rows[i]["PrizeName"].ToString();
                 remainCount[i] = totelCount[i] - usedCount[i];
+                if (remainCount[i]<0)
+                {
+                    remainCount[i] = 0;
+                }
                 allPrizeCount = allPrizeCount + remainCount[i];
             }
             int randomNum = new Random().Next(1, allPrizeCount + 1);
@@ -97,32 +101,67 @@ namespace SuuSee.WeChat
                 }
             }
             var prizeId = table.Rows[j]["PrizeId"].ToString();
-            var todayUsedCount = (int)SuuSee.Data.SqlHelper.ExecuteScalarText("select isnull(count(1),0)  from ScanHistory where PrizeId=@PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(day,ScanDate) = @Today",
-                new System.Data.SqlClient.SqlParameter("@PrizeId", prizeId),
-                new System.Data.SqlClient.SqlParameter("@Year", DateTime.Today.Year),
-                new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
-                new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day));
-            if (todayUsedCount < limit[j] + 1)
+            var prizeId2 = table.Rows[table.Rows.Count - 1]["PrizeId"].ToString();
+            if (prizeId != table.Rows[0]["PrizeId"].ToString())
             {
-                prize.PrizeId = Guid.Parse(prizeId);
-                prize.DayLimit = limit[j];
-                prize.QRCode = QRCode;
-                prize.Quantity = totelCount[j];
-                prize.NeedValid = false;
-                prize.PrizeName = PrizeName[j];
-                prize.URL = url[j];
-                return prize;
+                var todayUsedCount = (int)SuuSee.Data.SqlHelper.ExecuteScalarText("select isnull(count(1),0)  from ScanHistory where PrizeId=@PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(day,ScanDate) = @Today and DATEPART(hour,ScanDate) = @Hour",
+                    new System.Data.SqlClient.SqlParameter("@PrizeId", prizeId),
+                    new System.Data.SqlClient.SqlParameter("@Year", DateTime.Today.Year),
+                    new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
+                    new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day),
+                    new System.Data.SqlClient.SqlParameter("@Hour", DateTime.Today.Hour));
+                if (todayUsedCount < limit[j])
+                {
+                    prize.PrizeId = Guid.Parse(prizeId);
+                    prize.DayLimit = limit[j];
+                    prize.QRCode = QRCode;
+                    prize.Quantity = totelCount[j];
+                    prize.NeedValid = false;
+                    prize.PrizeName = PrizeName[j];
+                    prize.URL = url[j];
+                    return prize;
+                }
+                else
+                {
+                    prize.PrizeId = Guid.Parse(prizeId2);
+                    prize.DayLimit = limit[table.Rows.Count - 1];
+                    prize.QRCode = QRCode;
+                    prize.Quantity = totelCount[table.Rows.Count - 1];
+                    prize.NeedValid = false;
+                    prize.PrizeName = PrizeName[table.Rows.Count - 1];
+                    prize.URL = url[table.Rows.Count - 1];
+                    return prize;
+                }
             }
             else
             {
-                prize.PrizeId = Guid.Parse(prizeId);
-                prize.DayLimit = limit[table.Rows.Count - 1];
-                prize.QRCode = QRCode;
-                prize.Quantity = totelCount[table.Rows.Count - 1];
-                prize.NeedValid = false;
-                prize.PrizeName = PrizeName[table.Rows.Count - 1];
-                prize.URL = url[table.Rows.Count - 1];
-                return prize;
+                var todayUsedCount = (int)SuuSee.Data.SqlHelper.ExecuteScalarText("select isnull(count(1),0)  from ScanHistory where PrizeId=@PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(day,ScanDate) = @Today",
+                    new System.Data.SqlClient.SqlParameter("@PrizeId", prizeId),
+                    new System.Data.SqlClient.SqlParameter("@Year", DateTime.Today.Year),
+                    new System.Data.SqlClient.SqlParameter("@Month", DateTime.Today.Month),
+                    new System.Data.SqlClient.SqlParameter("@Today", DateTime.Today.Day));
+                if (todayUsedCount < limit[0])
+                {
+                    prize.PrizeId = Guid.Parse(prizeId);
+                    prize.DayLimit = limit[0];
+                    prize.QRCode = QRCode;
+                    prize.Quantity = totelCount[0];
+                    prize.NeedValid = false;
+                    prize.PrizeName = PrizeName[0];
+                    prize.URL = url[0];
+                    return prize;
+                }
+                else
+                {
+                    prize.PrizeId = Guid.Parse(prizeId2);
+                    prize.DayLimit = limit[table.Rows.Count - 1];
+                    prize.QRCode = QRCode;
+                    prize.Quantity = totelCount[table.Rows.Count - 1];
+                    prize.NeedValid = false;
+                    prize.PrizeName = PrizeName[table.Rows.Count - 1];
+                    prize.URL = url[table.Rows.Count - 1];
+                    return prize;
+                }
             }
         }
 
