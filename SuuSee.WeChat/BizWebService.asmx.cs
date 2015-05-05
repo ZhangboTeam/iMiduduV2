@@ -63,7 +63,7 @@ namespace SuuSee.WeChat
         /// <param name="QRCode">QR二维码</param>
         /// <returns>抽奖结果</returns>
         [WebMethod]
-        public iMidudu.Model.Prize PrizeLottery(Guid QRCode)
+        public iMidudu.Model.Prize PrizeLottery(Guid QRCode , string OpenId)
         {
             var table = SuuSee.Data.SqlHelper.GetTableText("select * ,(select isnull(count(1),0)  from ScanHistory where ScanHistory.PrizeId = Prize.PrizeId) as UsedCount from Prize where QRCode = @QRCode order by PrizeId",
                 new System.Data.SqlClient.SqlParameter("@QRCode", QRCode))[0];
@@ -135,6 +135,18 @@ namespace SuuSee.WeChat
             }
             else
             {
+                var Exists = SuuSee.Data.SqlHelper.Exists("select count(1) from Acception,ScanHistory where Acception.ScanHistoryId=ScanHistory.ScanHistoryId and OpenId=@OpenId", new System.Data.SqlClient.SqlParameter("@OpenId", OpenId));
+                if (Exists)
+                {
+                    prize.PrizeId = Guid.Parse(prizeId2);
+                    prize.DayLimit = limit[table.Rows.Count - 1];
+                    prize.QRCode = QRCode;
+                    prize.Quantity = totelCount[table.Rows.Count - 1];
+                    prize.NeedValid = false;
+                    prize.PrizeName = PrizeName[table.Rows.Count - 1];
+                    prize.URL = url[table.Rows.Count - 1];
+                    return prize;
+                }
                 var todayUsedCount = (int)SuuSee.Data.SqlHelper.ExecuteScalarText("select isnull(count(1),0)  from ScanHistory where PrizeId=@PrizeId and DATEPART(year,ScanDate) = @Year and DATEPART(month,ScanDate) = @Month and DATEPART(day,ScanDate) = @Today",
                     new System.Data.SqlClient.SqlParameter("@PrizeId", prizeId),
                     new System.Data.SqlClient.SqlParameter("@Year", DateTime.Today.Year),
